@@ -15,6 +15,7 @@ void load_image(const char* filename)
 
 int main()
 {
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(S_W, S_H, "Crop Shit");
 
     while(!WindowShouldClose())
@@ -34,12 +35,10 @@ int main()
                 {
                     if (IsTextureValid(texture))
                     {
-                        printf("Texture loaded\n");
                         UnloadTexture(texture);
                         load_image(file_path);
                     } else if (!IsTextureValid(texture))
                     {
-                        printf("No texture loaded\n");
                         load_image(file_path);
                     }
                 } else
@@ -50,6 +49,10 @@ int main()
             UnloadDroppedFiles(dropped_files);
         }
 
+        if (IsTextureValid(texture))
+        {
+            SetWindowSize(texture.width, texture.height);
+        }
         BeginDrawing();
         ClearBackground(BLACK);
         DrawTexture(texture, 0, 0, WHITE);
