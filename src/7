@@ -6,14 +6,15 @@
 #define S_W     1024
 #define S_H     768
 
+Texture2D texture = {0};
 Image image = {0};
 static bool is_mouse_pressed = false;
 
-void crop_texture(Texture2D* t, Rectangle r)
+void load_image(const char* filename)
 {
-    Image i = LoadImageFromTexture(*t);
-    ImageCrop(&i, r);
-    *t = LoadTextureFromImage(i);
+    Image image = LoadImage(filename);
+    texture = LoadTextureFromImage(image);
+    UnloadImage(image);
 }
 
 Rectangle generate_crop_area()
@@ -55,7 +56,6 @@ int main()
 {
     Rectangle crop = {0};
     Rectangle crop_area = {0};
-    Texture2D texture = {0};
 
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(S_W, S_H, "Crop Shit");
@@ -78,10 +78,10 @@ int main()
                     if (IsTextureValid(texture))
                     {
                         UnloadTexture(texture);
-                        texture = LoadTexture(file_path);
+                        load_image(file_path);
                     } else if (!IsTextureValid(texture))
                     {
-                        texture = LoadTexture(file_path);
+                        load_image(file_path);
                     }
                 } else
                 {
@@ -98,10 +98,6 @@ int main()
         if (!is_mouse_pressed)
         {
             crop_area = crop;
-        }
-        if (IsKeyPressed(KEY_C))
-        {
-            crop_texture(&texture, crop_area);
         }
         
         crop = generate_crop_area();
