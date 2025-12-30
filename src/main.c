@@ -11,13 +11,21 @@ static Node* head = NULL;
 
 static bool is_mouse_pressed = false;
 
-Texture2D crop_texture(Texture2D* t, Rectangle r)
+void set_window_size(Texture2D t)
 {
-    Image i = LoadImageFromTexture(*t);
-    ImageCrop(&i, r);
-    *t = LoadTextureFromImage(i);
+    if (IsTextureValid(t))
+    {
+        SetWindowSize(t.width, t.height);
+    }
+}
 
-    return *t;
+Texture2D crop_texture(Texture2D t, Rectangle r)
+{
+    Image i = LoadImageFromTexture(t);
+    ImageCrop(&i, r);
+    t = LoadTextureFromImage(i);
+
+    return t;
 }
 
 Rectangle generate_crop_area()
@@ -100,17 +108,25 @@ int main()
     {
         drop_file(&t);
 
-        if (IsTextureValid(t))
-        {
-            SetWindowSize(t.width, t.height);
-        }
         if (!is_mouse_pressed)
         {
             crop_area = crop;
         }
         if (IsKeyPressed(KEY_C))
         {
-            insert_last(&head, crop_texture(&t, crop_area));
+            insert_last(&head, crop_texture(t, crop_area));
+            int count = 0;
+            Node* tmp = head;
+            while (tmp->next != 0)
+            {
+                tmp = tmp->next;
+                count++;
+            }
+            printf("%d\n", count);
+        }
+        if (IsKeyPressed(KEY_U))
+        {
+            delete_last(&head);
         }
 
         crop = generate_crop_area();
@@ -119,6 +135,7 @@ int main()
         ClearBackground(BLACK);
         if (head == NULL)
         {
+            set_window_size(t);
             DrawTexture(t, 0, 0, WHITE);
         } else
         {
@@ -127,6 +144,7 @@ int main()
             {
                 tmp = tmp->next;
             }
+            set_window_size(tmp->t);
             DrawTexture(tmp->t, 0, 0, WHITE);
         }
         DrawRectangleLinesEx(crop, 1.0f, RED);

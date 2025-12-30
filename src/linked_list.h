@@ -14,5 +14,6 @@ struct Node
 Node* create_node(Texture2D t);
 void insert_first(Node** head, Texture2D t);
 void insert_last(Node** head, Texture2D t);
+void delete_last(Node** head);
 
 #endif

@@ -1,4 +1,5 @@
 #include "linked_list.h"
+#include "raylib.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -42,4 +43,26 @@ void insert_last(Node** head, Texture2D t)
         }
         tmp->next = new_node;
     }
+}
+
+void delete_last(Node** head)
+{
+    if (*head == NULL)
+    {
+        printf("List is empty\n");
+        return;
+    }
+    if ((*head)->next == NULL)
+    {
+        free(*head);
+        *head = NULL;
+        return;
+    }
+    Node* tmp = *head;
+    while (tmp->next->next != NULL)
+    {
+        tmp = tmp->next;
+    }
+    free(tmp->next);
+    tmp->next = NULL;
 }
