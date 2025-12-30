@@ -2,17 +2,22 @@
 #include <raylib.h>
 #include <stdlib.h>
 #include <raymath.h>
+#include "linked_list.h"
 
 #define S_W     1024
 #define S_H     768
 
+static Node* head = NULL;
+
 static bool is_mouse_pressed = false;
 
-void crop_texture(Texture2D* t, Rectangle r)
+Texture2D crop_texture(Texture2D* t, Rectangle r)
 {
     Image i = LoadImageFromTexture(*t);
     ImageCrop(&i, r);
     *t = LoadTextureFromImage(i);
+
+    return *t;
 }
 
 Rectangle generate_crop_area()
@@ -87,7 +92,6 @@ int main()
     Rectangle crop = {0};
     Rectangle crop_area = {0};
     Texture2D t = {0};
-    Texture2D t_cropped = {0};
 
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(S_W, S_H, "Crop Shit");
@@ -106,14 +110,25 @@ int main()
         }
         if (IsKeyPressed(KEY_C))
         {
-            crop_texture(&t, crop_area);
+            insert_last(&head, crop_texture(&t, crop_area));
         }
 
         crop = generate_crop_area();
 
         BeginDrawing();
         ClearBackground(BLACK);
-        DrawTexture(t, 0, 0, WHITE);
+        if (head == NULL)
+        {
+            DrawTexture(t, 0, 0, WHITE);
+        } else
+        {
+            Node* tmp = head;
+            while (tmp->next != NULL)
+            {
+                tmp = tmp->next;
+            }
+            DrawTexture(tmp->t, 0, 0, WHITE);
+        }
         DrawRectangleLinesEx(crop, 1.0f, RED);
         EndDrawing();
     }
