@@ -54,6 +54,7 @@ void delete_last(Node** head)
     }
     if ((*head)->next == NULL)
     {
+        UnloadTexture((*head)->t);
         free(*head);
         *head = NULL;
         return;
@@ -63,6 +64,7 @@ void delete_last(Node** head)
     {
         tmp = tmp->next;
     }
+    UnloadTexture(tmp->next->t);
     free(tmp->next);
     tmp->next = NULL;
 }

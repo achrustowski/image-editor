@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <raymath.h>
 #include "linked_list.h"
+#include <stdbool.h>
 
 #define S_W     1024
 #define S_H     768
@@ -10,25 +11,49 @@
 static Node* head = NULL;
 
 static bool is_mouse_pressed = false;
+static void handle_usr_input(Texture2D t, Rectangle r);
+static void set_window_size(Texture2D t);
+static Texture2D crop_texture(Texture2D t, Rectangle r);
+static Rectangle generate_crop_area();
 
-void set_window_size(Texture2D t)
+static void handle_usr_input(Texture2D t, Rectangle r)
 {
-    if (IsTextureValid(t))
+    if (IsKeyPressed(KEY_C))
     {
-        SetWindowSize(t.width, t.height);
+        insert_last(&head, crop_texture(t, r));
+    }
+    if (IsKeyPressed(KEY_U))
+    {
+        delete_last(&head);
     }
 }
 
-Texture2D crop_texture(Texture2D t, Rectangle r)
+static void set_window_size(Texture2D t)
+{
+    static int last_w = 0;
+    static int last_h = 0;
+
+    if (!IsTextureValid(t)) return;
+
+    if (t.width != last_w || t.height != last_h)
+    {
+        SetWindowSize(t.width, t.height);
+        last_w = t.width;
+        last_h = t.height;
+    }
+}
+
+static Texture2D crop_texture(Texture2D t, Rectangle r)
 {
     Image i = LoadImageFromTexture(t);
     ImageCrop(&i, r);
     t = LoadTextureFromImage(i);
+    UnloadImage(i);
 
     return t;
 }
 
-Rectangle generate_crop_area()
+static Rectangle generate_crop_area()
 {
     static Vector2 start = {0};
     static Vector2 end = {0};
@@ -112,22 +137,8 @@ int main()
         {
             crop_area = crop;
         }
-        if (IsKeyPressed(KEY_C))
-        {
-            insert_last(&head, crop_texture(t, crop_area));
-            int count = 0;
-            Node* tmp = head;
-            while (tmp->next != 0)
-            {
-                tmp = tmp->next;
-                count++;
-            }
-            printf("%d\n", count);
-        }
-        if (IsKeyPressed(KEY_U))
-        {
-            delete_last(&head);
-        }
+
+        handle_usr_input(t, crop_area);
 
         crop = generate_crop_area();
 
