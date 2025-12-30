@@ -2,31 +2,18 @@
 #include <raylib.h>
 #include <stdlib.h>
 #include <raymath.h>
-#include "linked_list.h"
 #include <stdbool.h>
+#include "doubly_linked_list.h"
 
 #define S_W     1024
 #define S_H     768
 
-static Node* head = NULL;
-
 static bool is_mouse_pressed = false;
-static void handle_usr_input(Texture2D t, Rectangle r);
+static void drop_file(Node** head, Texture2D* t);
+//static void handle_usr_input(Node** head, Texture2D* t, Rectangle r);
 static void set_window_size(Texture2D t);
-static Texture2D crop_texture(Texture2D t, Rectangle r);
+static void crop_texture(Texture2D* t, Rectangle r);
 static Rectangle generate_crop_area();
-
-static void handle_usr_input(Texture2D t, Rectangle r)
-{
-    if (IsKeyPressed(KEY_C))
-    {
-        insert_last(&head, crop_texture(t, r));
-    }
-    if (IsKeyPressed(KEY_U))
-    {
-        delete_last(&head);
-    }
-}
 
 static void set_window_size(Texture2D t)
 {
@@ -43,14 +30,13 @@ static void set_window_size(Texture2D t)
     }
 }
 
-static Texture2D crop_texture(Texture2D t, Rectangle r)
+static void crop_texture(Texture2D* t, Rectangle r)
 {
-    Image i = LoadImageFromTexture(t);
+    Image i = LoadImageFromTexture(*t);
     ImageCrop(&i, r);
-    t = LoadTextureFromImage(i);
+    UnloadTexture(*t);
+    *t = LoadTextureFromImage(i);
     UnloadImage(i);
-
-    return t;
 }
 
 static Rectangle generate_crop_area()
@@ -88,7 +74,7 @@ static Rectangle generate_crop_area()
     }
 }
 
-void drop_file(Texture2D* t)
+void drop_file(Node** head, Texture2D* t)
 {
     if (IsFileDropped())
     {
@@ -125,39 +111,27 @@ int main()
     Rectangle crop = {0};
     Rectangle crop_area = {0};
     Texture2D t = {0};
+    Node* head = NULL;
+
 
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(S_W, S_H, "Crop Shit");
 
     while(!WindowShouldClose())
     {
-        drop_file(&t);
+        drop_file(&head, &t);
 
         if (!is_mouse_pressed)
         {
             crop_area = crop;
         }
 
-        handle_usr_input(t, crop_area);
-
         crop = generate_crop_area();
 
         BeginDrawing();
         ClearBackground(BLACK);
-        if (head == NULL)
-        {
-            set_window_size(t);
-            DrawTexture(t, 0, 0, WHITE);
-        } else
-        {
-            Node* tmp = head;
-            while (tmp->next != NULL)
-            {
-                tmp = tmp->next;
-            }
-            set_window_size(tmp->t);
-            DrawTexture(tmp->t, 0, 0, WHITE);
-        }
+        set_window_size(t);
+        DrawTexture(t, 0, 0, WHITE);
         DrawRectangleLinesEx(crop, 1.0f, RED);
         EndDrawing();
     }

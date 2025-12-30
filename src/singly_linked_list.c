@@ -1,9 +1,9 @@
-#include "linked_list.h"
+#include "singly_linked_list.h"
 #include "raylib.h"
 #include <stdio.h>
 #include <stdlib.h>
 
-Node* create_node(Texture2D t)
+Node* singly_create_node(Texture2D t)
 {
     Node* new_node = (Node*)malloc(sizeof(Node));
 
@@ -19,17 +19,17 @@ Node* create_node(Texture2D t)
     return new_node;
 }
 
-void insert_first(Node** head, Texture2D t)
+void singly_insert_first(Node** head, Texture2D t)
 {
-    Node* new_node = create_node(t);
+    Node* new_node = singly_create_node(t);
 
     new_node->next = *head;
     *head = new_node;
 }
 
-void insert_last(Node** head, Texture2D t)
+void singly_insert_last(Node** head, Texture2D t)
 {
-    Node* new_node = create_node(t);
+    Node* new_node = singly_create_node(t);
 
     if (*head == NULL)
     {
@@ -45,7 +45,7 @@ void insert_last(Node** head, Texture2D t)
     }
 }
 
-void delete_last(Node** head)
+void singly_delete_last(Node** head)
 {
     if (*head == NULL)
     {
