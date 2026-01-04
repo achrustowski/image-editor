@@ -10,7 +10,6 @@
 
 static bool is_mouse_pressed = false;
 static void drop_file(Node** head, Texture2D* t);
-//static void handle_usr_input(Node** head, Texture2D* t, Rectangle r);
 static void set_window_size(Texture2D t);
 static void crop_texture(Texture2D* t, Rectangle r);
 static Rectangle generate_crop_area();
@@ -91,7 +90,7 @@ void drop_file(Node** head, Texture2D* t)
             {
                 if (IsTextureValid(*t))
                 {
-                    UnloadTexture(*t);    
+                    UnloadTexture(*t);
                     *t = LoadTexture(file_path);
                 } else if (!IsTextureValid(*t))
                 {
@@ -112,7 +111,6 @@ int main()
     Rectangle crop_area = {0};
     Texture2D t = {0};
     Node* head = NULL;
-
 
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(S_W, S_H, "Crop Shit");
